@@ -1,0 +1,20 @@
+{
+  "name": "hackathon-moment",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/face-hh/hackathon-moment.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/face-hh/hackathon-moment/issues"
+  },
+  "homepage": "https://github.com/face-hh/hackathon-moment#readme"
+}
