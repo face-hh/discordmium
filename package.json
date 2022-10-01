@@ -16,5 +16,9 @@
   "bugs": {
     "url": "https://github.com/face-hh/hackathon-moment/issues"
   },
-  "homepage": "https://github.com/face-hh/hackathon-moment#readme"
+  "homepage": "https://github.com/face-hh/hackathon-moment#readme",
+  "dependencies": {
+    "eris": "^0.17.1",
+    "puppeteer": "^18.0.5"
+  }
 }
