@@ -1,4 +1,4 @@
-# Discordium
+# Discordmium
 ## 🤨 ● What the hell is this?
 Discordium brings the Chromium browser instance in Discord, of course limited to the Discord API.
 
