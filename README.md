@@ -37,4 +37,4 @@ Documatic acts as a search engine for your codebase; once you describe what you'
 Not sitting next to each other? No problem. Ask Documatic questions of your codebase to learn and understand your code in seconds. Documatic is the team member you wish you had
 
 Our Visual studio Code extension: https://marketplace.visualstudio.com/items?itemName=Documatic.documatic
-<img src='https://cdn.discordapp.com/attachments/926110059782615071/1037404343470661713/Documatic_sh6hrz.gif'>
+![](https://cdn.discordapp.com/attachments/926110059782615071/1037404343470661713/Documatic_sh6hrz.gif)
