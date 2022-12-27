@@ -12,7 +12,7 @@ npm i discordmium
 ## Usage
 
 ```javascript
-const Browser = require('./index');
+const Browser = require('discordmium');
 
 Browser(<DiscordToken>, <GuildId>)
 /** DiscordToken - Get it from Discord Developers Portal */
