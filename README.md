@@ -1,6 +1,6 @@
 # Discordmium
 
-Warning: This is meant for self-use only. You should not host this and make it publically available to users, as they have full control over a browser inside your PC, as well as network information and user agent.
+Warning: This is meant for self-use only. You should not host this and make it publicly available to users, as they have full control over a browser inside your PC, as well as network information and user agent.
 
 ## 🤨 ● What the hell is this?
 Discordmium brings the Chromium browser instance in Discord, of course limited to the Discord API.
