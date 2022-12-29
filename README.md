@@ -17,7 +17,7 @@ npm i discordmium
 ```javascript
 const Browser = require('discordmium');
 
-Browser.browse(<DiscordToken>, <GuildId>)
+Browser(<DiscordToken>, <GuildId>)
 /** DiscordToken - Get it from Discord Developers Portal */
 /** GuildId - The guild that the command will be published at */
 ```
