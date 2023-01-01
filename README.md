@@ -5,7 +5,8 @@ Warning: This is meant for self-use only. You should not host this and make it p
 ## 🤨 ● What the hell is this?
 Discordmium brings the Chromium browser instance in Discord, of course limited to the Discord API.
 
-![xd](https://cdn.discordapp.com/attachments/945308137932599348/1025718262497038386/ima333ge.png)
+![image](https://user-images.githubusercontent.com/69168154/210166179-4cda39b1-a191-4dd0-85bd-51b12c670942.png)
+
 ## Installation
 
 ```shell
@@ -17,10 +18,11 @@ npm i discordmium
 ```javascript
 const Browser = require('discordmium');
 
-Browser(<DiscordToken>, <GuildId>)
-/** Note - Both inputs should be strings "like this" */
+Browser(<DiscordToken>, <GuildId>, <RestartTime>)
+/** Note - tokens and IDs should be strings "like this" */
+
 /** DiscordToken - Get it from Discord Developers Portal */
-/** GuildId - The guild that the command will be published at */
+/** RestartTime - (optional, default = 300000) The amount of ms to wait to restart the current browser and let other users run the command again */
 ```
 
 ## Running

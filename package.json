@@ -1,6 +1,6 @@
 {
-  "name": "hackathon-moment",
-  "version": "1.0.0",
+  "name": "discordmium",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -9,15 +9,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/face-hh/hackathon-moment.git"
+    "url": "git+https://github.com/face-hh/discordmium.git"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/face-hh/hackathon-moment/issues"
+    "url": "https://github.com/face-hh/discordmium/issues"
   },
-  "homepage": "https://github.com/face-hh/hackathon-moment#readme",
+  "homepage": "https://github.com/face-hh/discordmium#readme",
   "dependencies": {
     "eris": "^0.17.1",
     "puppeteer": "^18.0.5"

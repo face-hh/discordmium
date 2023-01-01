@@ -1,4 +1,4 @@
-module.exports = async function browse(token, guildID) {
+module.exports = async function browse(token, guildID, clearTime = 300000) {
 
 	const puppeteer = require('puppeteer');
 	const Eris = require('eris');
@@ -15,9 +15,10 @@ module.exports = async function browse(token, guildID) {
 	let browser;
 	let page;
 	let alreadyRunning;
-	let mouseModifier = 10;
-	let x = 0;
-	let y = 0;
+	let collector;
+	let mouseModifier = 70;
+	let x = 980;
+	let y = 400;
 
 	async function move(dir) {
 		if (dir === 'click') await page.mouse.click(x, y);
@@ -41,7 +42,11 @@ module.exports = async function browse(token, guildID) {
 			height: 1080,
 		});
 
+
 		await plugin(page);
+
+		// start in middle
+		await page.mouse.move(x, y);
 
 		await page.goto('https://google.com');
 	})();
@@ -77,7 +82,7 @@ module.exports = async function browse(token, guildID) {
 				const image = await page.screenshot();
 				const ids = [];
 
-				for (let i = 0; i < 10; i++) {
+				for (let i = 0; i < 15; i++) {
 					ids.push(String(Math.random()));
 				}
 
@@ -86,20 +91,31 @@ module.exports = async function browse(token, guildID) {
 						type: 1,
 						components: [
 							{ type: 2, label: 'x10', custom_id: ids[0], style: 1 },
-							{ type: 2, label: '\u200b', custom_id: ids[1], emoji: { id: '1001533471023452270' }, style: 2 },
+							{ type: 2, label: 'x25', custom_id: ids[1], style: 1 },
 							{ type: 2, label: 'x50', custom_id: ids[2], style: 1 },
-							{ type: 2, label: '\u200b', custom_id: ids[6], emoji: { id: '1025434642112856116' }, style: 2 },
+							{ type: 2, label: 'x75', custom_id: ids[3], style: 1 },
+							{ type: 2, label: 'x100', custom_id: ids[4], style: 1 },
+						],
+					},
+					{
+						type: 1,
+						components: [
+							{ type: 2, label: '\u200b', custom_id: ids[5], emoji: { id: '1059027778021896203' }, style: 2 },
+							// { type: 2, label: '\u200b', custom_id: ids[6], emoji: { id: '1059032779230294038' }, style: 2 },
+							{ type: 2, label: '\u200b', custom_id: ids[6], style: 2, disabled: true },
+							{ type: 2, label: '\u200b', custom_id: ids[7], emoji: { id: '1001533471023452270' }, style: 3 },
+							{ type: 2, label: '\u200b', custom_id: ids[8], emoji: { id: '1025434642112856116' }, style: 2 },
 							{ type: 2, label: '\u200b', custom_id: ids[9], emoji: { id: '1025712385866092594' }, style: 2 },
 						],
 					},
 					{
 						type: 1,
 						components: [
-							{ type: 2, label: '\u200b', custom_id: ids[3], emoji: { id: '1001533781880094721' }, style: 2 },
-							{ type: 2, label: '\u200b', custom_id: ids[4], emoji: { id: '1001533779933921380' }, style: 2 },
-							{ type: 2, label: '\u200b', custom_id: ids[5], emoji: { id: '1001533778210074635' }, style: 2 },
-							{ type: 2, label: '\u200b', custom_id: ids[7], emoji: { id: '1025708958905806878' }, style: 2 },
-							{ type: 2, label: '\u200b', custom_id: ids[8], emoji: { id: '1025711319506231316' }, style: 2 },
+							{ type: 2, label: '\u200b', custom_id: ids[10], emoji: { id: '1025708958905806878' }, style: 2 },
+							{ type: 2, label: '\u200b', custom_id: ids[11], emoji: { id: '1001533781880094721' }, style: 3 },
+							{ type: 2, label: '\u200b', custom_id: ids[12], emoji: { id: '1001533779933921380' }, style: 3 },
+							{ type: 2, label: '\u200b', custom_id: ids[13], emoji: { id: '1001533778210074635' }, style: 3 },
+							{ type: 2, label: '\u200b', custom_id: ids[14], emoji: { id: '1025711319506231316' }, style: 2 },
 						],
 					},
 				];
@@ -115,10 +131,10 @@ module.exports = async function browse(token, guildID) {
 
 				await int.createFollowup(messageObject, { name: 'file.png', file: image });
 
-				const collector = await collectInteractions({
+				collector = await collectInteractions({
 					client: bot,
 					componentType: 2,
-					filter: (_) => true,
+					filter: (_) => _.member.id === int.member.id,
 				});
 
 				collector.on('collect', async interaction => {
@@ -126,53 +142,74 @@ module.exports = async function browse(token, guildID) {
 
 					if (!ids.includes(interaction.data.custom_id)) return;
 
-					/** MOUSE SENSITIVITY INCREASEMENT */
-					if (ids[0] === interaction.data.custom_id) {
-						mouseModifier = 10;
-					}
+					/** MOUSE SENSITIVITY INCREASEMENT | FIRST ROW */
+					switch (interaction.data.custom_id) {
 
-					if (ids[2] === interaction.data.custom_id) {
+					case ids[0]:
+						mouseModifier = 20;
+						break;
+
+					case ids[1]:
+						mouseModifier = 25;
+						break;
+					case ids[2]:
 						mouseModifier = 50;
-					}
-					if (ids[6] === interaction.data.custom_id) {
+						break;
+					case ids[3]:
+						mouseModifier = 75;
+						break;
+					case ids[4]:
+						mouseModifier = 100;
+						break;
+
+						/** SECOND ROW */
+					case ids[5]:
+						await page.keyboard.press('Tab');
+						break;
+					// case ids[6]:
+					// 	await page.keyboard.press('F5');
+					// 	break;
+					case ids[7]:
 						await move('click');
-					}
-					if (ids[9] === interaction.data.custom_id) {
+						break;
+					case ids[8]:
+						await move('up');
+						break;
+					case ids[9]:
 						await page.keyboard.down('Control');
 						await page.keyboard.press('A');
 						await page.keyboard.up('Control');
 						await page.keyboard.press('Backspace');
-						return update(int, messageObject);
-					}
+						break;
 
-					if (ids[1] === interaction.data.custom_id) {
-						await move('up');
-					}
-					/** SECOND LINE OF BUTTONS */
-					if (ids[3] === interaction.data.custom_id) {
-						await move('left');
-					}
-					if (ids[4] === interaction.data.custom_id) {
-						await move('down');
-					}
-					if (ids[5] === interaction.data.custom_id) {
-						await move('right');
-					}
-					if (ids[7] === interaction.data.custom_id) {
+						/** THIRD ROW */
+					case ids[10]:
 						interaction.createMessage('Please type here your text, which will be typed in the browser.');
-						return data.push({ id: interaction.member.id });
-					}
-					if (ids[8] === interaction.data.custom_id) {
+						data.push({ id: interaction.member.id });
+						break;
+					case ids[11]:
+						await move('left');
+						break;
+					case ids[12]:
+						await move('down');
+						break;
+					case ids[13]:
+						await move('right');
+						break;
+					case ids[14]:
 						await page.keyboard.press('Enter');
-						return update(int, messageObject);
+						break;
+
 					}
-
-
-					wait(1000);
 					update(int, messageObject);
 				});
 			}
 		}
 	});
 	bot.connect();
+
+	setInterval(async () => {
+		alreadyRunning = false;
+		collector?.stopListening?.('end').catch(() => {});
+	}, clearTime);
 };

@@ -13,9 +13,9 @@ async function pluginInit(page) {
               face-was-here {
                 pointer-events: none;
                 position: absolute;
-                top: 0;
+                top: 980;
                 z-index: 10000;
-                left: 0;
+                left: 400;
                 width: 20px;
                 height: 20px;
                 background: rgb(255 0 0);
@@ -50,6 +50,8 @@ async function pluginInit(page) {
 			document.head.appendChild(element);
 			document.body.appendChild(box);
 
+            box.style.left = '980px';
+            box.style.top = '400px';
 			/** HANDLE EVENTS */
 
 			document.addEventListener('mousemove', event => {
