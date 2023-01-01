@@ -170,10 +170,10 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					// 	await page.keyboard.press('F5');
 					// 	break;
 					case ids[7]:
-						await move('click');
+						await move('up');
 						break;
 					case ids[8]:
-						await move('up');
+						await move('click');
 						break;
 					case ids[9]:
 						await page.keyboard.down('Control');
