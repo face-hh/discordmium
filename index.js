@@ -106,7 +106,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					await page.mouse.move(x, y);
 				}, clearTime);
 
-				if (int.data.options[0].value) await page.goto(int.data.options[0].value);
+				if (int.data.options) await page.goto(int.data.options[0].value);
 
 				const image = await page.screenshot();
 				const ids = [];
