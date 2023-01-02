@@ -19,6 +19,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 	let mouseModifier = 70;
 	let x = 980;
 	let y = 400;
+	let date;
 
 	async function move(dir) {
 		if (dir === 'click') await page.mouse.click(x, y);
@@ -42,24 +43,31 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 			height: 1080,
 		});
 
-
 		await plugin(page);
+
+		await page.goto('https://google.com');
 
 		// start in middle
 		await page.mouse.move(x, y);
-
-		await page.goto('https://google.com');
 	})();
 
 	bot.on('ready', () => {
 		console.log('Connected to Discord!');
-		bot.bulkEditGuildCommands(guildID, [	{
+		bot.bulkEditGuildCommands(guildID, [{
 			name: 'browse',
 			description: 'open a virtual browser',
+			options: [
+				{
+					name: 'url',
+					description: "The url you want to go to",
+					type: Eris.Constants.ApplicationCommandOptionTypes.STRING,
+					required: false,
+				}
+			]
 		}]);
 	});
 	bot.on('messageCreate', async (msg) => {
-	// eslint-disable-next-line no-shadow
+		// eslint-disable-next-line no-shadow
 		const found = data.find((x) => x.id == msg.author.id);
 
 		if (found !== undefined) {
@@ -75,9 +83,30 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 			if (int.data.name === 'browse') {
 				await int.acknowledge();
 
-				if (alreadyRunning !== undefined) return int.createFollowup('sir. 1 browser is already opened by someone else!! i dont have nasa PC so plz no.');
+				if (alreadyRunning !== undefined) return int.createFollowup(`sir. 1 browser is already opened by someone else!! i dont have nasa PC so plz no.\n\nA new browser will be able to be opened in <t:${Math.floor(date / 1000)}:R>`);
 
 				alreadyRunning = true;
+
+				date = Date.now() + clearTime;
+
+				setTimeout(async () => {
+					alreadyRunning = undefined;
+					await page.close();
+					page = await browser.newPage();
+
+					await page.setViewport({
+						width: 1920,
+						height: 1080,
+					});
+
+
+					await plugin(page);
+					await page.goto('https://google.com');
+
+					await page.mouse.move(x, y);
+				}, clearTime);
+
+				if (int.data.options[0].value) await page.goto(int.data.options[0].value);
 
 				const image = await page.screenshot();
 				const ids = [];
@@ -102,7 +131,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 						components: [
 							{ type: 2, label: '\u200b', custom_id: ids[5], emoji: { id: '1059027778021896203' }, style: 2 },
 							// { type: 2, label: '\u200b', custom_id: ids[6], emoji: { id: '1059032779230294038' }, style: 2 },
-							{ type: 2, label: '\u200b', custom_id: ids[6], style: 2, disabled: true },
+							{ type: 2, label: '\u200b', custom_id: ids[6], emoji: { id: '1059434860864884837' }, style: 2 },
 							{ type: 2, label: '\u200b', custom_id: ids[7], emoji: { id: '1001533471023452270' }, style: 3 },
 							{ type: 2, label: '\u200b', custom_id: ids[8], emoji: { id: '1025434642112856116' }, style: 2 },
 							{ type: 2, label: '\u200b', custom_id: ids[9], emoji: { id: '1025712385866092594' }, style: 2 },
@@ -119,7 +148,8 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 						],
 					},
 				];
-				const messageObject = { content: '\u200b',
+				const messageObject = {
+					content: '\u200b',
 					components: componentsArray,
 					embeds: [{
 						image: { url: 'attachment://file.png' },
@@ -145,60 +175,72 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					/** MOUSE SENSITIVITY INCREASEMENT | FIRST ROW */
 					switch (interaction.data.custom_id) {
 
-					case ids[0]:
-						mouseModifier = 20;
-						break;
+						case ids[0]:
+							mouseModifier = 20;
+							break;
 
-					case ids[1]:
-						mouseModifier = 25;
-						break;
-					case ids[2]:
-						mouseModifier = 50;
-						break;
-					case ids[3]:
-						mouseModifier = 75;
-						break;
-					case ids[4]:
-						mouseModifier = 100;
-						break;
+						case ids[1]:
+							mouseModifier = 25;
+							break;
+						case ids[2]:
+							mouseModifier = 50;
+							break;
+						case ids[3]:
+							mouseModifier = 75;
+							break;
+						case ids[4]:
+							mouseModifier = 100;
+							break;
 
 						/** SECOND ROW */
-					case ids[5]:
-						await page.keyboard.press('Tab');
-						break;
-					// case ids[6]:
-					// 	await page.keyboard.press('F5');
-					// 	break;
-					case ids[7]:
-						await move('up');
-						break;
-					case ids[8]:
-						await move('click');
-						break;
-					case ids[9]:
-						await page.keyboard.down('Control');
-						await page.keyboard.press('A');
-						await page.keyboard.up('Control');
-						await page.keyboard.press('Backspace');
-						break;
+						case ids[5]:
+							await page.keyboard.press('Tab');
+							break;
+						case ids[6]:
+							await page.close();
+							page = await browser.newPage();
+
+							await page.setViewport({
+								width: 1920,
+								height: 1080,
+							});
+
+
+							await plugin(page);
+							await page.goto('https://google.com');
+
+							await page.mouse.move(x, y);
+							break;
+						case ids[7]:
+							await move('up');
+							break;
+						case ids[8]:
+							await move('click');
+							break;
+						case ids[9]:
+							await page.keyboard.down('Control');
+							await page.keyboard.press('A');
+							await page.keyboard.up('Control');
+							await page.keyboard.press('Backspace');
+							break;
 
 						/** THIRD ROW */
-					case ids[10]:
-						interaction.createMessage('Please type here your text, which will be typed in the browser.');
-						data.push({ id: interaction.member.id });
-						break;
-					case ids[11]:
-						await move('left');
-						break;
-					case ids[12]:
-						await move('down');
-						break;
-					case ids[13]:
-						await move('right');
-						break;
-					case ids[14]:
-						await page.keyboard.press('Enter');
-						break;
+						case ids[10]:
+							interaction.createMessage('Please type here your text, which will be typed in the browser.');
+							data.push({ id: interaction.member.id });
+							break;
+						case ids[11]:
+							await move('left');
+							break;
+						case ids[12]:
+							await move('down');
+							break;
+						case ids[13]:
+							await move('right');
+							break;
+						case ids[14]:
+							await page.keyboard.press('Enter');
+							break;
 
 					}
 					update(int, messageObject);
@@ -207,11 +249,4 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 		}
 	});
 	bot.connect();
-
-	setInterval(async () => {
-		alreadyRunning = false;
-		collector?.stopListening?.('end').catch(() => {});
-		await page.close();
-		await page.goto('https://google.com');
-	}, clearTime);
 };
