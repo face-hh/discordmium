@@ -13,6 +13,26 @@ Discordmium brings the Chromium browser instance in Discord, of course limited t
 npm i discordmium
 ```
 
+## Bot Creation
+A bot account is required in order to run Discordmium. This is an easy process and will help you get set up.
+
+1. Ensure you are logged in to the Discord website by clicking [here](https://discord.com/app).
+2. Once logged in, visit the [Discord Developer Portal](https://discord.com/developers/applications).
+3. Click the **New Application** button in the top right.
+4. Give the application a name and agree to Discord's Developer ToS and Developer Policy.
+5. Click **Create**.
+6. On the left of the screen, click the **Bot** section.
+7. Click the **Add Bot** button.
+8. Confirm the creation of the bot by clicking the **Yes, do it!** button.
+9. Congratulations! A bot has been created on your application. Just a little more configuration is needed.
+10. Set the bot's profile picture if desired.
+11. Scroll down until you see the **Message Content Intent** option and toggle it. (Remember to save your changes!)
+12. Scroll back up and click **Reset Token**.
+13. Confirm by clicking the **Yes, do it!** button.
+14. Your bot's token will now be displayed. Don't share it with anyone, and keep it somewhere safe as it will be required for the bot to function!
+
+Now that the bot has been set up, the token can now be used to run Discordmium!
+
 ## Usage
 
 ```javascript
