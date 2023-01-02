@@ -211,5 +211,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 	setInterval(async () => {
 		alreadyRunning = false;
 		collector?.stopListening?.('end').catch(() => {});
+		await page.close();
+		await page.goto('https://google.com');
 	}, clearTime);
 };
