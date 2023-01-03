@@ -107,7 +107,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					await page.mouse.move(x, y);
 				}, clearTime);
 
-				if(blacklist.includes(int.data.options[0].value)) return int.createFollowup('Blacklisted content detected, please refrain from using such keywords.');
+				if(blacklist.includes(int?.data?.options[0]?.value)) return int.createFollowup('Blacklisted content detected, please refrain from using such keywords.');
 				if (int.data.options) await page.goto(int.data.options[0].value);
 
 				const image = await page.screenshot();
