@@ -1,16 +1,15 @@
+const puppeteer = require('puppeteer');
+const Eris = require('eris');
+
+const data = [];
+const blacklist = ["localhost", "tcp", "ngrok", "file", "settings", "chrome://"];
+
+const plugin = require('./utils/plugin');
+const { collectInteractions } = require('./utils/interactionCollector');
+
 module.exports = async function browse(token, guildID, clearTime = 300000) {
 
-	const puppeteer = require('puppeteer');
-	const Eris = require('eris');
-	const data = [];
-
-	const plugin = require('./utils/plugin');
-	const { collectInteractions } = require('./utils/interactionCollector');
-
 	const bot = new Eris(token, { intents: ['allNonPrivileged', 'guildMessages'] });
-	function wait(ms) {
-		return new Promise(resolve => setTimeout(resolve, ms));
-	}
 
 	let browser;
 	let page;
@@ -71,6 +70,8 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 		const found = data.find((x) => x.id == msg.author.id);
 
 		if (found !== undefined) {
+			if(blacklist.includes(msg.content)) return msg.channel.createMessage('Blacklisted content detected, please refrain from using such keywords.');
+
 			await page.keyboard.type(msg.content, { delay: 10 });
 
 			data.splice(found, 1);
@@ -106,6 +107,7 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					await page.mouse.move(x, y);
 				}, clearTime);
 
+				if(blacklist.includes(int.data.options[0].value)) return int.createFollowup('Blacklisted content detected, please refrain from using such keywords.');
 				if (int.data.options) await page.goto(int.data.options[0].value);
 
 				const image = await page.screenshot();
