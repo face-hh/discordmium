@@ -64,11 +64,12 @@ Now that the bot has been set up, the token can now be used to run Discordmium!
 ```javascript
 const Browser = require('discordmium');
 
-Browser(<DiscordToken>, <GuildId>, <RestartTime>)
+Browser(<DiscordToken>, <GuildId>, <RestartTime>, <sussyFilter>)
 /** Note - tokens and IDs should be strings "like this" */
 
 /** DiscordToken - Get it from Discord Developers Portal */
 /** RestartTime - (optional, default = 300000) The amount of ms to wait to restart the current browser and let other users run the command again */
+/** sussyFilter - (optional, default = true) Whether the content in the type button and URL input shall be filtered or not. */
 ```
 
 ## Running

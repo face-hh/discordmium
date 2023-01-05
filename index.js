@@ -2,12 +2,36 @@ const puppeteer = require('puppeteer');
 const Eris = require('eris');
 
 const data = [];
-const blacklist = ["localhost", "tcp", "ngrok", "file", "settings", "chrome://"];
+const blacklist = ['localhost', 'tcp', 'ngrok', 'file', 'settings', 'chrome://', 'ip', 'address', 'internet', 'wifi'];
 
 const plugin = require('./utils/plugin');
 const { collectInteractions } = require('./utils/interactionCollector');
 
-module.exports = async function browse(token, guildID, clearTime = 300000) {
+let str2;
+
+async function loadFilters() {
+	const NSFW_LIST = 'https://raw.githubusercontent.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words/master/en';
+	const x = await fetch(NSFW_LIST);
+	str2 = await x.text();
+}
+
+async function sussySearch(content) {
+	const words = str2.split('\n');
+
+	words.pop();
+	words.concat(blacklist);
+
+	return words.some(word => content.includes(word));
+}
+
+/**
+ * The main browse function.
+ * @param {String} token The Discord bot token which we'll use to connect to Discord.
+ * @param {String} guildID The server ID in which you want to use the bot in.
+ * @param {Number} clearTime The time allocated to each user (default: 300000 | Milliseconds)
+ * @param {Boolean} sussyFilter The filter for suspicious searches and sites (default: true)
+ */
+module.exports = async function browse(token, guildID, clearTime = 300000, sussyFilter = true) {
 
 	const bot = new Eris(token, { intents: ['allNonPrivileged', 'guildMessages'] });
 
@@ -20,6 +44,10 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 	let y = 400;
 	let date;
 
+	/**
+	 * The move function that manages the mouse.
+	 * @param {String} dir The directions where the mouse shall be moved. (click, up, down, left, right)
+	 */
 	async function move(dir) {
 		if (dir === 'click') await page.mouse.click(x, y);
 		if (dir === 'up' && y <= 1080) await page.mouse.move(x, y - mouseModifier), y -= mouseModifier;
@@ -27,6 +55,12 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 		if (dir === 'left' && x <= 1920) await page.mouse.move(x - mouseModifier, y), x -= mouseModifier;
 		if (dir === 'right' && x <= 1920) await page.mouse.move(x + mouseModifier, y), x += mouseModifier;
 	}
+
+	/**
+	 * Update the message for video output.
+	 * @param {*} int The interaction to edit.
+	 * @param {*} messageObject The message object that shall be shown once the message is edited.
+	 */
 	async function update(int, messageObject) {
 		const screenshot = await page.screenshot();
 
@@ -34,6 +68,8 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 	}
 
 	(async () => {
+		if (sussyFilter) await loadFilters();
+
 		browser = await puppeteer.launch();
 		page = await browser.newPage();
 
@@ -52,17 +88,18 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 
 	bot.on('ready', () => {
 		console.log('Connected to Discord!');
+
 		bot.bulkEditGuildCommands(guildID, [{
 			name: 'browse',
 			description: 'open a virtual browser',
 			options: [
 				{
 					name: 'url',
-					description: "The url you want to go to",
+					description: 'The url you want to go to',
 					type: Eris.Constants.ApplicationCommandOptionTypes.STRING,
 					required: false,
-				}
-			]
+				},
+			],
 		}]);
 	});
 	bot.on('messageCreate', async (msg) => {
@@ -70,11 +107,17 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 		const found = data.find((x) => x.id == msg.author.id);
 
 		if (found !== undefined) {
-			if (blacklist.includes(msg.content)) return msg.channel.createMessage('Blacklisted content detected, please refrain from using such keywords.');
+			data.splice(found, 1);
+
+			if (sussySearch(msg.content) === true) {
+				return msg.channel.createMessage({
+					content: 'https://cdn.discordapp.com/attachments/907306705090646066/1060484860122247178/Untitle41d.png',
+					messageReference: { messageID: msg.id },
+				});
+			}
 
 			await page.keyboard.type(msg.content, { delay: 10 });
 
-			data.splice(found, 1);
 			await msg.addReaction('✅');
 		}
 	});
@@ -85,7 +128,10 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 				await int.acknowledge();
 
 				if (alreadyRunning !== undefined) return int.createFollowup(`sir. 1 browser is already opened by someone else!! i dont have nasa PC so plz no.\n\nA new browser will be able to be opened in <t:${Math.floor(date / 1000)}:R>`);
-
+				if (int.data.options) {
+					if (sussySearch(int.data.options?.[0]?.value) === true) return int.createFollowup('https://cdn.discordapp.com/attachments/907306705090646066/1060484860122247178/Untitle41d.png');
+					if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/.test(int.data.options?.[0]?.value)) await page.goto(int.data.options[0].value);
+				}
 				alreadyRunning = true;
 
 				date = Date.now() + clearTime;
@@ -100,15 +146,11 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 						height: 1080,
 					});
 
-
 					await plugin(page);
 					await page.goto('https://google.com');
 
 					await page.mouse.move(x, y);
 				}, clearTime);
-
-				if (blacklist.includes(int.data.options?.[0]?.value)) return int.createFollowup('Blacklisted content detected, please refrain from using such keywords.');
-				if (int.data.options && /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/.test(int.data.options?.[0]?.value)) await page.goto(int.data.options[0].value);
 
 				const image = await page.screenshot();
 				const ids = [];
@@ -155,7 +197,6 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					components: componentsArray,
 					embeds: [{
 						image: { url: 'attachment://file.png' },
-						footer: { text: 'plz read docs on how use!!' },
 						color: 0xFFFFFF,
 					}],
 					attachments: [],
@@ -177,72 +218,71 @@ module.exports = async function browse(token, guildID, clearTime = 300000) {
 					/** MOUSE SENSITIVITY INCREASEMENT | FIRST ROW */
 					switch (interaction.data.custom_id) {
 
-						case ids[0]:
-							mouseModifier = 20;
-							break;
+					case ids[0]:
+						mouseModifier = 20;
+						break;
 
-						case ids[1]:
-							mouseModifier = 25;
-							break;
-						case ids[2]:
-							mouseModifier = 50;
-							break;
-						case ids[3]:
-							mouseModifier = 75;
-							break;
-						case ids[4]:
-							mouseModifier = 100;
-							break;
+					case ids[1]:
+						mouseModifier = 25;
+						break;
+					case ids[2]:
+						mouseModifier = 50;
+						break;
+					case ids[3]:
+						mouseModifier = 75;
+						break;
+					case ids[4]:
+						mouseModifier = 100;
+						break;
 
-						/** SECOND ROW */
-						case ids[5]:
-							await page.keyboard.press('Tab');
-							break;
-						case ids[6]:
-							await page.close();
-							page = await browser.newPage();
+					/** SECOND ROW */
+					case ids[5]:
+						await page.keyboard.press('Tab');
+						break;
+					case ids[6]:
+						await page.close();
+						page = await browser.newPage();
 
-							await page.setViewport({
-								width: 1920,
-								height: 1080,
-							});
+						await page.setViewport({
+							width: 1920,
+							height: 1080,
+						});
 
+						await plugin(page);
+						await page.goto('https://google.com');
 
-							await plugin(page);
-							await page.goto('https://google.com');
+						await page.mouse.move(x, y);
+						break;
+					case ids[7]:
+						await move('up');
+						break;
+					case ids[8]:
+						await move('click');
+						break;
+					case ids[9]:
+						await page.keyboard.down('Control');
+						await page.keyboard.press('A');
+						await page.keyboard.up('Control');
+						await page.keyboard.press('Backspace');
+						break;
 
-							await page.mouse.move(x, y);
-							break;
-						case ids[7]:
-							await move('up');
-							break;
-						case ids[8]:
-							await move('click');
-							break;
-						case ids[9]:
-							await page.keyboard.down('Control');
-							await page.keyboard.press('A');
-							await page.keyboard.up('Control');
-							await page.keyboard.press('Backspace');
-							break;
-
-						/** THIRD ROW */
-						case ids[10]:
-							interaction.createMessage('Please type here your text, which will be typed in the browser.');
-							data.push({ id: interaction.member.id });
-							break;
-						case ids[11]:
-							await move('left');
-							break;
-						case ids[12]:
-							await move('down');
-							break;
-						case ids[13]:
-							await move('right');
-							break;
-						case ids[14]:
-							await page.keyboard.press('Enter');
-							break;
+					/** THIRD ROW */
+					case ids[10]:
+						interaction.createMessage('Please type here your text, which will be typed in the browser.');
+						data.push({ id: interaction.member.id });
+						break;
+					case ids[11]:
+						await move('left');
+						break;
+					case ids[12]:
+						await move('down');
+						break;
+					case ids[13]:
+						await move('right');
+						break;
+					case ids[14]:
+						await page.keyboard.press('Enter');
+						break;
 
 					}
 					update(int, messageObject);
