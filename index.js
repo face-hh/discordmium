@@ -16,6 +16,8 @@ async function loadFilters() {
 }
 
 async function sussySearch(content) {
+	content = content.toLowerCase();
+
 	const words = str2.split('\n');
 
 	words.pop();
